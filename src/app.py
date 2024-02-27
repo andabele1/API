@@ -117,20 +117,21 @@ def listar_proyecto():
         return jsonify({'mensaje': "Error"})
 
     
-@app.route('/proyectos/<id>', methods = ['GET'])    
+@app.route('/proyectos/<id>', methods=['GET'])    
 def leer_proyecto(id):
     try:
         cursor = conexion.connection.cursor()
-        sql = "SELECT * FROM proyectos WHERE id = '{0}'".format(id)
-        cursor.execute(sql)
+        sql = "SELECT p.id, p.nombre, p.descripcion, p.fecha_inicio, u.nombre AS nombre_gerente FROM proyectos p INNER JOIN usuarios u ON p.gerente = u.id WHERE p.id = %s"
+        cursor.execute(sql, (id,))
         datos = cursor.fetchone()
-        if datos != None:
+        if datos:
             proyecto = {'id': datos[0], 'nombre': datos[1], 'descripcion': datos[2], 'fecha_inicio': datos[3], 'gerente': datos[4]} 
             return jsonify({'proyecto': proyecto, 'mensaje': "Proyecto encontrado"})
         else:
             return jsonify({'mensaje': "Proyecto NO encontrado"})
     except Exception as ex:
         return jsonify({'mensaje': "Error"})
+
     
 #Esto solo lo puede hacer un administrador, el id 1
 @app.route('/proyectos/<id_usuario>', methods=['POST'])
