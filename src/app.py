@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
 from config import config
 from flask_mysqldb import MySQL
+from werkzeug.security import generate_password_hash, check_password_hash 
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -38,22 +40,24 @@ def leer_usuario(id):
             return jsonify({'mensaje': "Usuario NO encontrado"})
     except Exception as ex:
         return jsonify({'mensaje': "Error"})
-
-@app.route('/usuarios', methods = ['POST'])    
+        
+@app.route('/usuarios', methods=['POST'])
 def registrar_usuario():
-        try:
-            cursor = conexion.connection.cursor()
-            sql = """INSERT INTO usuarios (id, usuario, email, contrasena, rol) 
-            VALUES ({0}, '{1}', '{2}', '{3}', {4})""".format(request.json['id'],
-            request.json['usuario'],request.json['email'],request.json['contraseña'],
-            request.json['rol'])
-            cursor.execute(sql)
-            conexion.connection.commit()
-            return jsonify({'mensaje': "Usuario registrado"})
-        except Exception as ex:
-            return jsonify({'mensaje': "Error"})
+    try:
+        cursor = conexion.connection.cursor()
+        hashed_password = generate_password_hash(request.json['contrasena'])
+        
+        sql = "INSERT INTO usuarios (usuario, email, contrasena, rol, nombre) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(sql, (request.json['usuario'], request.json['email'], hashed_password, request.json['rol'], request.json['nombre']))
+        
+        conexion.connection.commit()
+        
+        return jsonify({'mensaje': "Usuario registrado exitosamente"})
+    except Exception as ex:
+        return "Error"
     
 @app.route('/usuarios/<id>', methods = ['DELETE'])
+
 def eliminar_usuario(id):
     try:
         cursor = conexion.connection.cursor()
@@ -63,29 +67,45 @@ def eliminar_usuario(id):
         return jsonify({'mensaje': "Usuario eliminado"})
     except Exception as ex:
         return jsonify({'mensaje': "Error"})
-
-@app.route('/usuarios/<id>', methods = ['PUT'])
+    
+@app.route('/usuarios/<id>', methods=['PUT'])
 def actualizar_usuario(id):
     try:
         cursor = conexion.connection.cursor()
-        sql = """UPDATE usuarios SET usuario = '{0}', 
-        email = '{1}', contrasena = '{2}', rol = {3} WHERE id = {4}""".format(
-        request.json['usuario'],request.json['email'],request.json['contraseña'],
-        request.json['rol'], id)
-        cursor.execute(sql)
+        usuario = request.json['usuario']
+        email = request.json['email']
+        nombre = request.json['nombre']
+        
+        # Encripta la nueva contraseña si se proporciona
+        nueva_contrasena = request.json.get('contrasena')
+        if nueva_contrasena:
+            nueva_contrasena = generate_password_hash(nueva_contrasena)
+        
+        sql = "UPDATE usuarios SET usuario = %s, email = %s, nombre = %s"
+        params = [usuario, email, nombre]
+        
+        # Agregar la nueva contraseña al SQL y a los parámetros si se proporciona
+        if nueva_contrasena:
+            sql += ", contrasena = %s"
+            params.append(nueva_contrasena)
+        
+        sql += " WHERE id = %s"
+        params.append(id)
+        
+        cursor.execute(sql, params)
         conexion.connection.commit()
         return jsonify({'mensaje': "Usuario actualizado"})
     except Exception as ex:
-        return jsonify({'mensaje': "Error"})
+        return "Error"
     
 
 # PROYECTOS
     
-@app.route('/proyectos', methods = ['GET'])
+@app.route('/proyectos', methods=['GET'])
 def listar_proyecto():
     try:
         cursor = conexion.connection.cursor()
-        sql = "SELECT * FROM proyectos"
+        sql = "SELECT p.id, p.nombre, p.descripcion, p.fecha_inicio, u.nombre AS nombre_gerente FROM proyectos p INNER JOIN usuarios u ON p.gerente = u.id"
         cursor.execute(sql)
         datos = cursor.fetchall()
         proyectos = []
@@ -95,6 +115,7 @@ def listar_proyecto():
         return jsonify({'proyectos': proyectos, 'mensaje': "Listado:"})
     except Exception as ex:
         return jsonify({'mensaje': "Error"})
+
     
 @app.route('/proyectos/<id>', methods = ['GET'])    
 def leer_proyecto(id):
@@ -112,44 +133,64 @@ def leer_proyecto(id):
         return jsonify({'mensaje': "Error"})
     
 #Esto solo lo puede hacer un administrador, el id 1
-@app.route('/proyectos', methods = ['POST'])    
-def registrar_proyecto():
-        try:
-            cursor = conexion.connection.cursor()
-            sql = """INSERT INTO proyectos (id, nombre, descripcion, fecha_inicio, gerente) 
-            VALUES ({0}, '{1}', '{2}', '{3}', {4})""".format(request.json['id'],
-            request.json['nombre'],request.json['descripcion'],request.json['fecha_inicio'],
-            request.json['gerente'])
-            cursor.execute(sql)
+@app.route('/proyectos/<id_usuario>', methods=['POST'])
+def registrar_proyecto(id_usuario):
+    try:
+        cursor = conexion.connection.cursor()
+        cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (id_usuario,))
+        rol_usuario = cursor.fetchone()
+
+        if rol_usuario[0] == 1:
+            nombre = request.json['nombre']
+            descripcion = request.json['descripcion']
+            fecha_inicio = datetime.strptime(request.json['fecha_inicio'], '%Y-%m-%d').date()
+
+            cursor.execute("INSERT INTO proyectos (nombre, descripcion, fecha_inicio, gerente) VALUES (%s, %s, %s, %s)",
+                           (nombre, descripcion, fecha_inicio, id_usuario))
             conexion.connection.commit()
-            return jsonify({'mensaje': "Proyecto registrado"})
-        except Exception as ex:
-            return jsonify({'mensaje': "Error"})
-       
-@app.route('/proyectos/<id>', methods = ['DELETE'])
-def eliminar_proyecto(id):
+            return jsonify({'mensaje': 'Proyecto creado correctamente'})
+        else:
+            return jsonify({'mensaje': 'Usuario no tiene permisos para crear proyectos'}), 403
+    except Exception as ex:
+        return "Error"
+
+@app.route('/proyectos/<id_proyecto>/<id_usuario>', methods=['DELETE'])
+def eliminar_proyecto(id_proyecto, id_usuario):
     try:
         cursor = conexion.connection.cursor()
-        sql = "DELETE FROM proyectos WHERE id = '{0}'".format(id)
-        cursor.execute(sql)
-        conexion.connection.commit()
-        return jsonify({'mensaje': "Proyecto eliminado"})
+        cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (id_usuario,))
+        rol_usuario = cursor.fetchone()
+
+        if rol_usuario and rol_usuario[0] == 1:
+            sql = "DELETE FROM proyectos WHERE id = %s"
+            cursor.execute(sql, (id_proyecto,))
+            conexion.connection.commit()
+            return jsonify({'mensaje': "Proyecto eliminado"})
+        else:
+            return jsonify({'mensaje': 'Usuario no tiene permisos para eliminar proyectos'}), 403
     except Exception as ex:
-        return jsonify({'mensaje': "Error"})
-    
-@app.route('/proyectos/<id>', methods = ['PUT'])
-def actualizar_proyecto(id):
+        return jsonify({'mensaje': "Error"}), 500
+
+
+@app.route('/proyectos/<id_proyecto>/<id_usuario>', methods=['PUT'])
+def actualizar_proyecto(id_proyecto, id_usuario):
     try:
         cursor = conexion.connection.cursor()
-        sql = """UPDATE proyectos SET nombre = '{0}', 
-        descripcion = '{1}', fecha_inicio = '{2}', gerente = {3} WHERE id = {4}""".format(
-        request.json['nombre'],request.json['descripcion'],request.json['fecha_inicio'],
-        request.json['gerente'], id)
-        cursor.execute(sql)
-        conexion.connection.commit()
-        return jsonify({'mensaje': " actualizado"})
+        cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (id_usuario,))
+        rol_usuario = cursor.fetchone()
+        if rol_usuario and rol_usuario[0] == 1:
+            nombre = request.json['nombre']
+            descripcion = request.json['descripcion']
+
+            sql = "UPDATE proyectos SET nombre = %s, descripcion = %s WHERE id = %s"
+            cursor.execute(sql, (nombre, descripcion, id_proyecto))
+            conexion.connection.commit()
+            return jsonify({'mensaje': "Proyecto actualizado"})
+        else:
+            return jsonify({'mensaje': 'Usuario no tiene permisos para actualizar proyectos'}), 403
     except Exception as ex:
-        return jsonify({'mensaje': "Error"})
+        return jsonify({'mensaje': "Error"}), 500
+
 
 
 # PAGINA
@@ -162,3 +203,28 @@ if __name__ == '__main__':
     app.run()
 
 
+#LOGIN
+    
+@app.route('/login', methods=['POST'])
+def login():
+    try:
+        email = request.json.get('email')
+        password = request.json.get('contrasena')
+
+        # Busca el usuario en la base de datos por su correo electrónico
+        cursor = conexion.connection.cursor()
+        cursor.execute("SELECT id, contrasena FROM usuarios WHERE email = %s", (email,))
+        usuario = cursor.fetchone()
+
+        if usuario:
+            # Verifica que la contraseña coincida utilizando Werkzeug
+            hashed_password = usuario[1]
+            if check_password_hash(hashed_password, password):
+                return jsonify({'mensaje': 'Usuario logueado correctamente'})
+            else:
+                return jsonify({'mensaje': 'Usuario o contraseña incorrectos'}), 401
+        else:
+            return jsonify({'mensaje': 'Usuario o contraseña incorrectos'}), 401
+
+    except Exception as ex:
+        return jsonify({'mensaje': 'Error en el servidor'}), 500
