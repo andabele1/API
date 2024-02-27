@@ -191,7 +191,6 @@ def actualizar_proyecto(id_proyecto, id_usuario):
     except Exception as ex:
         return jsonify({'mensaje': "Error"}), 500
 
-
 # LOGIN
    #seguir intentando despues!! 
 @app.route('/login', methods=['POST'])
@@ -342,6 +341,108 @@ def proyectos_usuario(usuario_id):
 
     except Exception as e:
         return jsonify({'mensaje': str(e)}), 500  
+
+# HISTORIAS DE USUARIO
+
+@app.route('/crear_historia_de_usuario', methods=['POST'])
+def crear_historia_de_usuario():
+    try:
+        detalles = request.json.get('detalles')
+        criterios = request.json.get('criterios')
+        proyecto_id = request.json.get('proyecto')
+        estado_id = request.json.get('estado')
+        usuario_id = request.json.get('usuario')
+
+        if not all([detalles, criterios, proyecto_id, estado_id, usuario_id]):
+            return jsonify({'mensaje': 'Se requieren detalles, criterios, proyecto, estado y usuario'}), 400
+
+        cursor = conexion.connection.cursor()
+
+        # Verificar si el proyecto existe
+        cursor.execute("SELECT 1 FROM proyectos WHERE id = %s", (proyecto_id,))
+        if cursor.fetchone() is None:
+            return jsonify({'mensaje': 'El proyecto especificado no existe'}), 404
+
+        # Verificar si la historia de usuario ya existe en el proyecto
+        cursor.execute("SELECT 1 FROM historias_de_usuario WHERE detalles = %s AND proyecto = %s", (detalles, proyecto_id))
+        if cursor.fetchone() is not None:
+            return jsonify({'mensaje': 'Ya existe una historia de usuario con los mismos detalles en este proyecto'}), 400
+
+        # Verificar si el usuario existe y tiene el rol de gerente
+        cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (usuario_id,))
+        usuario = cursor.fetchone()
+        if usuario is None or usuario[0] != 1:
+            return jsonify({'mensaje': 'Solo los gerentes pueden agregar historias de usuario'}), 403
+
+        cursor.execute("INSERT INTO historias_de_usuario (detalles, criterios, proyecto, estado, usuario) VALUES (%s, %s, %s, %s, %s)", (detalles, criterios, proyecto_id, estado_id, usuario_id))
+        conexion.connection.commit()
+        cursor.close()
+
+        return jsonify({'mensaje': 'Historia de usuario creada correctamente'}), 200
+
+    except Exception as e:
+        return jsonify({'mensaje': 'Error en el servidor: ' + str(e)}), 500
+
+@app.route('/eliminar_historia_de_usuario/<int:historia_id>', methods=['DELETE'])
+def eliminar_historia_de_usuario(historia_id):
+    try:
+        usuario_id = request.json.get('usuario')
+        proyecto_id = request.json.get('proyecto')
+
+        if usuario_id is None or proyecto_id is None:
+            return jsonify({'mensaje': 'Se requieren usuario y proyecto'}), 400
+
+        cursor = conexion.connection.cursor()
+
+        # Verificar si el usuario existe y tiene el rol de gerente
+        cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (usuario_id,))
+        usuario = cursor.fetchone()
+        if usuario is None or usuario[0] != 1:
+            return jsonify({'mensaje': 'Solo los gerentes pueden eliminar historias de usuario'}), 403
+
+        # Verificar si el proyecto existe
+        cursor.execute("SELECT 1 FROM proyectos WHERE id = %s", (proyecto_id,))
+        if cursor.fetchone() is None:
+            return jsonify({'mensaje': 'El proyecto especificado no existe'}), 404
+
+        # Verificar si la historia de usuario existe y pertenece al proyecto
+        cursor.execute("SELECT 1 FROM historias_de_usuario WHERE id = %s AND proyecto = %s", (historia_id, proyecto_id))
+        historia_existente = cursor.fetchone()
+        if historia_existente is None:
+            return jsonify({'mensaje': 'La historia de usuario especificada no existe o no pertenece al proyecto'}), 404
+
+        # Eliminar la historia de usuario
+        cursor.execute("DELETE FROM historias_de_usuario WHERE id = %s", (historia_id,))
+        conexion.connection.commit()
+        cursor.close()
+
+        return jsonify({'mensaje': 'Historia de usuario eliminada correctamente'}), 200
+
+    except Exception as e:
+        return jsonify({'mensaje': 'Error en el servidor: ' + str(e)}), 500
+
+@app.route('/historias_de_usuario/<int:proyecto_id>', methods=['GET'])
+def leer_historias_de_usuario(proyecto_id):
+    try:
+        cursor = conexion.connection.cursor()
+
+        # Obtener las historias de usuario del proyecto
+        cursor.execute("SELECT id, detalles, criterios, estado FROM historias_de_usuario WHERE proyecto = %s", (proyecto_id,))
+        historias = cursor.fetchall()
+
+        cursor.close()
+
+        if historias:
+            historias_dict = [{'id': historia[0], 'detalles': historia[1], 'criterios': historia[2], 'estado': historia[3]} for historia in historias]
+            return jsonify({'historias_de_usuario': historias_dict}), 200
+        else:
+            return jsonify({'mensaje': 'No se encontraron historias de usuario para el proyecto especificado'}), 404
+
+    except Exception as e:
+        return jsonify({'mensaje': 'Error en el servidor: ' + str(e)}), 500
+
+# TAREAS
+    
 
 
 # PAGINA
