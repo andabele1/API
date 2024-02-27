@@ -131,7 +131,6 @@ def leer_proyecto(id):
             return jsonify({'mensaje': "Proyecto NO encontrado"})
     except Exception as ex:
         return jsonify({'mensaje': "Error"})
-
     
 #Esto solo lo puede hacer un administrador, el id 1
 @app.route('/proyectos/<id_usuario>', methods=['POST'])
