@@ -97,7 +97,6 @@ def actualizar_usuario(id):
         return jsonify({'mensaje': "Usuario actualizado"})
     except Exception as ex:
         return "Error"
-    
 
 # PROYECTOS
     
@@ -132,7 +131,6 @@ def leer_proyecto(id):
     except Exception as ex:
         return jsonify({'mensaje': "Error"})
     
-#Esto solo lo puede hacer un administrador, el id 1
 @app.route('/proyectos/<id_usuario>', methods=['POST'])
 def registrar_proyecto(id_usuario):
     try:
@@ -305,7 +303,6 @@ def eliminar_usuario_proyecto(usuario_id, proyecto_id):
     except Exception as e:
         return jsonify({'mensaje': 'Error en el servidor: ' + str(e)}), 500
 
-
 @app.route('/proyectos_usuario/<usuario_id>', methods=['GET'])
 def proyectos_usuario(usuario_id):
     try:
@@ -442,7 +439,79 @@ def leer_historias_de_usuario(proyecto_id):
         return jsonify({'mensaje': 'Error en el servidor: ' + str(e)}), 500
 
 # TAREAS
-    
+
+@app.route('/crear_tarea', methods=['POST'])
+def crear_tarea():
+    try:
+        descripcion = request.json.get('descripcion')
+        estado_id = request.json.get('estado')
+        historia_id = request.json.get('historia')
+        usuario_id = request.json.get('usuario')
+
+        if not all([descripcion, estado_id, historia_id, usuario_id]):
+            return jsonify({'mensaje': 'Se requieren descripcion, estado, historia y usuario'}), 400
+
+        cursor = conexion.connection.cursor()
+
+        # Verificar si la historia de usuario existe
+        cursor.execute("SELECT proyecto FROM historias_de_usuario WHERE id = %s", (historia_id,))
+        proyecto_id = cursor.fetchone()
+        if proyecto_id is None:
+            return jsonify({'mensaje': 'La historia de usuario especificada no existe'}), 404
+
+        # Verificar si el usuario tiene el rol de gerente en la tabla de usuarios
+        cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (usuario_id,))
+        rol_usuario = cursor.fetchone()
+        if rol_usuario is None or rol_usuario[0] != 1:
+            return jsonify({'mensaje': 'Solo el gerente puede crear tareas para esta historia de usuario'}), 403
+
+        # Verificar si el estado existe
+        cursor.execute("SELECT 1 FROM estados WHERE id = %s", (estado_id,))
+        if cursor.fetchone() is None:
+            return jsonify({'mensaje': 'El estado especificado no existe'}), 404
+
+        # Verificar si ya existe una tarea con la misma descripción en la misma historia de usuario
+        cursor.execute("SELECT 1 FROM tareas_ WHERE descripcion = %s AND historia_de_usuario = %s", (descripcion, historia_id))
+        if cursor.fetchone() is not None:
+            return jsonify({'mensaje': 'Ya existe una tarea con la misma descripción en esta historia de usuario'}), 409
+
+        # Insertar la nueva tarea en la base de datos
+        cursor.execute("INSERT INTO tareas_ (descripcion, estado, historia_de_usuario, usuario) VALUES (%s, %s, %s, %s)", (descripcion, estado_id, historia_id, usuario_id))
+        conexion.connection.commit()
+        cursor.close()
+
+        return jsonify({'mensaje': 'Tarea creada correctamente'}), 200
+
+    except Exception as e:
+        return jsonify({'mensaje': 'Error en el servidor: ' + str(e)}), 500
+
+
+
+# en proceso!!
+@app.route('/eliminar_tarea/<int:tarea_id>', methods=['DELETE'])
+def eliminar_tarea(tarea_id):
+    try:
+        usuario_id = request.json.get('usuario_id')
+
+        if not usuario_id:
+            return jsonify({'mensaje': 'Se requiere el ID de usuario'}), 400
+
+        cursor = conexion.connection.cursor()
+
+        # Verificar si el usuario está asignado al proyecto de la tarea como gerente
+        cursor.execute("SELECT 1 FROM tareas_ JOIN historias_de_usuario ON tareas_.historia_de_usuario_id = historias_de_usuario.id JOIN usuarios_proyectos ON historias_de_usuario.proyecto_id = usuarios_proyectos.proyecto WHERE tareas_.id = %s AND usuarios_proyectos.usuario = %s ", (tarea_id, usuario_id))
+        if cursor.fetchone() is None:
+            return jsonify({'mensaje': 'Solo el gerente asignado al proyecto puede eliminar esta tarea'}), 403
+
+        # Eliminar la tarea de la base de datos
+        cursor.execute("DELETE FROM tareas_ WHERE id = %s", (tarea_id,))
+        conexion.connection.commit()
+        cursor.close()
+
+        return jsonify({'mensaje': 'Tarea eliminada correctamente'}), 200
+
+    except Exception as e:
+        return jsonify({'mensaje': 'Error en el servidor: ' + str(e)}), 500
 
 
 # PAGINA
