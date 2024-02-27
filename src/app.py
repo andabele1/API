@@ -192,19 +192,9 @@ def actualizar_proyecto(id_proyecto, id_usuario):
         return jsonify({'mensaje': "Error"}), 500
 
 
-
-# PAGINA
-
-def pagina_no_encontrada(error):
-    return "<h1>La pagina que intentas buscar no existe... </h1>", 404
-if __name__ == '__main__':
-    app.config.from_object(config['development'])
-    app.register_error_handler(404, pagina_no_encontrada)
-    app.run()
-
-
 #LOGIN
     
+
 @app.route('/login', methods=['POST'])
 def login():
     try:
@@ -228,3 +218,14 @@ def login():
 
     except Exception as ex:
         return jsonify({'mensaje': 'Error en el servidor'}), 500
+
+
+# PAGINA
+
+def pagina_no_encontrada(error):
+    return "<h1>La pagina que intentas buscar no existe... </h1>", 404
+if __name__ == '__main__':
+    app.config.from_object(config['development'])
+    app.register_error_handler(404, pagina_no_encontrada)
+    app.run()
+
