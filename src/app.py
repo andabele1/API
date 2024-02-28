@@ -81,7 +81,6 @@ def registrar_usuario():
         return "Error"
     
 @app.route('/usuarios/<id>', methods = ['DELETE'])
-
 def eliminar_usuario(id):
     try:
         cursor = conexion.connection.cursor()
@@ -138,7 +137,6 @@ def listar_proyecto():
         return jsonify({'proyectos': proyectos, 'mensaje': "Listado:"})
     except Exception as ex:
         return jsonify({'mensaje': "Error"})
-
     
 @app.route('/proyectos/<id>', methods=['GET'])    
 def leer_proyecto(id):
@@ -192,7 +190,6 @@ def eliminar_proyecto(id_proyecto, id_usuario):
             return jsonify({'mensaje': 'Usuario no tiene permisos para eliminar proyectos'}), 403
     except Exception as ex:
         return jsonify({'mensaje': "Error"}), 500
-
 
 @app.route('/proyectos/<id_proyecto>/<id_usuario>', methods=['PUT'])
 def actualizar_proyecto(id_proyecto, id_usuario):
