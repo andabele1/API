@@ -8,6 +8,30 @@ app = Flask(__name__)
 
 conexion = MySQL(app)
 
+# LOGIN
+
+@app.route('/login', methods=['POST'])
+def login():
+    try:
+        email = request.json.get('email')
+        password = request.json.get('contrasena')
+
+        cursor = conexion.connection.cursor()
+        cursor.execute("SELECT id, contrasena FROM usuarios WHERE email = %s", (email,))
+        usuario = cursor.fetchone()
+
+        if usuario:
+            # Verifica que la contraseña coincida utilizando Werkzeug
+            hashed_password = usuario[1]
+            if check_password_hash(hashed_password, password):
+                return jsonify({'mensaje': 'Usuario logueado correctamente'})
+            else:
+                return jsonify({'mensaje': 'Usuario o contraseña incorrectos'}), 401
+        else:
+            return jsonify({'mensaje': 'Usuario o contraseña incorrectos'}), 401
+
+    except Exception as ex:
+        return jsonify({'mensaje': 'Error en el servidor'}), 500
 
 # USUARIOS
 
@@ -188,31 +212,6 @@ def actualizar_proyecto(id_proyecto, id_usuario):
             return jsonify({'mensaje': 'Usuario no tiene permisos para actualizar proyectos'}), 403
     except Exception as ex:
         return jsonify({'mensaje': "Error"}), 500
-
-# LOGIN
-   #seguir intentando despues!! 
-@app.route('/login', methods=['POST'])
-def login():
-    try:
-        email = request.json.get('email')
-        password = request.json.get('contrasena')
-
-        cursor = conexion.connection.cursor()
-        cursor.execute("SELECT id, contrasena FROM usuarios WHERE email = %s", (email,))
-        usuario = cursor.fetchone()
-
-        if usuario:
-            # Verifica que la contraseña coincida utilizando Werkzeug
-            hashed_password = usuario[1]
-            if check_password_hash(hashed_password, password):
-                return jsonify({'mensaje': 'Usuario logueado correctamente'})
-            else:
-                return jsonify({'mensaje': 'Usuario o contraseña incorrectos'}), 401
-        else:
-            return jsonify({'mensaje': 'Usuario o contraseña incorrectos'}), 401
-
-    except Exception as ex:
-        return jsonify({'mensaje': 'Error en el servidor'}), 500
 
 # USUARIO_PROYECTO
     
@@ -543,6 +542,13 @@ def tareas_por_historia(historia_id):
 
     except Exception as e:
         return jsonify({'mensaje': 'Error en el servidor: ' + str(e)}), 500
+
+# ACTUALIZACIONES_TAREAS
+    
+
+
+# ACTUALIZACIONES_HISTORIAS_DE_USUARIO
+    
 
 
 # PAGINA
