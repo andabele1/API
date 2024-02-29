@@ -8,30 +8,6 @@ app = Flask(__name__)
 
 conexion = MySQL(app)
 
-# LOGIN
-
-@app.route('/login', methods=['POST'])
-def login():
-    try:
-        email = request.json.get('email')
-        password = request.json.get('contrasena')
-
-        cursor = conexion.connection.cursor()
-        cursor.execute("SELECT id, contrasena FROM usuarios WHERE email = %s", (email,))
-        usuario = cursor.fetchone()
-
-        if usuario:
-            # Verifica que la contraseña coincida utilizando Werkzeug
-            hashed_password = usuario[1]
-            if check_password_hash(hashed_password, password):
-                return jsonify({'mensaje': 'Usuario logueado correctamente'})
-            else:
-                return jsonify({'mensaje': 'Usuario o contraseña incorrectos'}), 401
-        else:
-            return jsonify({'mensaje': 'Usuario o contraseña incorrectos'}), 401
-
-    except Exception as ex:
-        return jsonify({'mensaje': 'Error en el servidor'}), 500
 
 # USUARIOS
 
@@ -121,6 +97,30 @@ def actualizar_usuario(id):
         return jsonify({'mensaje': "Usuario actualizado"})
     except Exception as ex:
         return "Error"
+    
+# LOGIN
+
+@app.route('/login', methods=['POST'])
+def login():
+    try:
+        email = request.json.get('email')
+        password = request.json.get('contrasena')
+
+        cursor = conexion.connection.cursor()
+        cursor.execute("SELECT id, contrasena FROM usuarios WHERE email = %s", (email,))
+        usuario = cursor.fetchone()
+
+        if usuario:
+            hashed_password = usuario[1]
+            if check_password_hash(hashed_password, password):
+                return jsonify({'mensaje': 'Usuario logueado correctamente'})
+            else:
+                return jsonify({'mensaje': 'Usuario o contraseña incorrectos'}), 401
+        else:
+            return jsonify({'mensaje': 'Usuario o contraseña incorrectos'}), 401
+
+    except Exception as ex:
+        return jsonify({'mensaje': 'Error en el servidor'}), 500
 
 # PROYECTOS
     
@@ -181,7 +181,6 @@ def registrar_proyecto(id_usuario):
             return jsonify({'mensaje': 'Usuario no tiene permisos para crear proyectos'}), 403
     except Exception as ex:
         return jsonify({'mensaje': f"Error al registrar proyecto: {str(ex)}"}), 500
-
 
 @app.route('/proyectos/<id_proyecto>/<id_usuario>', methods=['DELETE'])
 def eliminar_proyecto(id_proyecto, id_usuario):
@@ -536,7 +535,7 @@ def editar_tarea(tarea_id):
     
 # ACTUALIZACIONES_TAREAS
     
-@app.route('/actualizar_estado_tarea/<int:tarea_id>', methods=['PUT'])
+@app.route('/actualizar_estado_tarea/<int:tarea_id>', methods=['POST'])
 def actualizar_estado_tarea(tarea_id):
     try:
         cursor = conexion.connection.cursor()
@@ -571,7 +570,41 @@ def actualizar_estado_tarea(tarea_id):
 
 # ACTUALIZACIONES_HISTORIAS_DE_USUARIO
     
+@app.route('/actualizar_estado_historia/<int:usuario_id>/<int:historia_usuario_id>', methods=['POST'])
+def actualizar_estado_historia(usuario_id, historia_usuario_id):
+    try:
+        cursor = conexion.connection.cursor()
+        cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (usuario_id,))
+        rol_usuario = cursor.fetchone()
 
+        if rol_usuario and rol_usuario[0] == 1:
+            cursor.execute("SELECT estado FROM tareas_ WHERE historias_de_usuario = %s", (historia_usuario_id,))
+            estados_tareas = cursor.fetchall()
+
+            if estados_tareas:
+                if all(estado[0] == 1 for estado in estados_tareas):
+                    nuevo_estado = 1
+                elif any(estado[0] == 2 for estado in estados_tareas):
+                    nuevo_estado = 2
+                else:
+                    nuevo_estado = 3
+
+                cursor.execute("UPDATE historias_de_usuario SET estado = %s WHERE id = %s", (nuevo_estado, historia_usuario_id))
+                conexion.connection.commit()
+
+
+                hora_actualizacion = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                cursor.execute("INSERT INTO actualizacion_estado_historias_de_usuario (historias_de_usuario, estado, usuario, hora_actualizacion) VALUES (%s, %s, %s, %s)",
+                               (historia_usuario_id, nuevo_estado, usuario_id, hora_actualizacion))
+                conexion.connection.commit()
+
+                return jsonify({'mensaje': f'Estado de la historia de usuario actualizado correctamente a {nuevo_estado}'}), 200
+            else:
+                return jsonify({'mensaje': 'No hay tareas asociadas a esta historia de usuario'}), 404
+        else:
+            return jsonify({'mensaje': 'No tienes permisos para actualizar el estado de esta historia de usuario'}), 403
+    except Exception as e:
+        return jsonify({'mensaje': str(e)}), 500  
 
 # PAGINA
 

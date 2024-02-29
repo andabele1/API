@@ -16,8 +16,8 @@ JSON de ejemplo:
     "nombre": "Andres Betancourt"
     }
 
-en cada campo se añade el usuario, un email, una contraseña que luego se va a encriptar, un rol (1 gerente, 2 desarrollador), y el nombre del usuario,
-no deben ahber campos repetidos en el usuario o email, si se encuentra un asuario repetido no se registrara.
+En cada campo se añade el usuario, un email, una contraseña que luego se va a encriptar, un rol (1 gerente, 2 desarrollador), y el nombre del usuario,
+no deben haber campos repetidos en el usuario o email, si se encuentra un usuario repetido no se registrara.
 
 ### get_leer_usuarios
 
@@ -37,7 +37,7 @@ Se muestran todos los usuarios que esten en la base de datos.
 
 URL: http://127.0.0.1:5000/usuarios/<id del usuario a actualizar>
 
-URL de emplo: http://127.0.0.1:5000/usuarios/3
+URL de ejemplo: http://127.0.0.1:5000/usuarios/3
 
 JSON de ejemplo:
 
@@ -245,6 +245,27 @@ JSON de ejemplo:
     }
 
 En el campo "usuario" se debera poner el id del usuario que va a eliminar la tarea, cualquier usuario puede elimnar una tarea.
+
+## Funcionamiento de Actulizaciones historia de usuario
+
+### post_actualizar_estado_historia
+
+URL: http://127.0.0.1:5000/actualizar_estado_historia/<id del gerente (rol = 1 ) que va a actualizar la historia de usuario>/<id de la historia de usuario a actualizar>
+
+URL de ejemplo: http://127.0.0.1:5000/actualizar_estado_historia/2/3
+ 
+Se actualizara el estado de las historias de usuario y quedaran almacenadas en una bitacora de actualizaciones.
+
+
+## Funcionamiento de Actualizaciones estado tareas
+
+### put_actualizar_estado_tareas
+
+URL: http://127.0.0.1:5000/actualizar_estado_tarea/<id de la tarea a actualizar>
+
+URL de ejemplo: http://127.0.0.1:5000/actualizar_estado_tarea/5
+
+Se actualizara el estado de la tarea especificada y quedaran almacenadas en una bitacora de actualizaciones.
 
 
 
