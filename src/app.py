@@ -166,6 +166,13 @@ def registrar_proyecto(id_usuario):
             descripcion = request.json['descripcion']
             fecha_inicio = datetime.strptime(request.json['fecha_inicio'], '%Y-%m-%d').date()
 
+            # Verificar si ya existe un proyecto con el mismo nombre
+            cursor.execute("SELECT 1 FROM proyectos WHERE nombre = %s", (nombre,))
+            proyecto_existente = cursor.fetchone()
+            if proyecto_existente:
+                return jsonify({'mensaje': 'Ya existe un proyecto con este nombre'}), 400
+
+            # Si no hay un proyecto con el mismo nombre, proceder con la inserción
             cursor.execute("INSERT INTO proyectos (nombre, descripcion, fecha_inicio, gerente) VALUES (%s, %s, %s, %s)",
                            (nombre, descripcion, fecha_inicio, id_usuario))
             conexion.connection.commit()
@@ -173,7 +180,8 @@ def registrar_proyecto(id_usuario):
         else:
             return jsonify({'mensaje': 'Usuario no tiene permisos para crear proyectos'}), 403
     except Exception as ex:
-        return "Error"
+        return jsonify({'mensaje': f"Error al registrar proyecto: {str(ex)}"}), 500
+
 
 @app.route('/proyectos/<id_proyecto>/<id_usuario>', methods=['DELETE'])
 def eliminar_proyecto(id_proyecto, id_usuario):
@@ -383,6 +391,10 @@ def eliminar_historia_de_usuario(historia_id):
         if historia_existente is None:
             return jsonify({'mensaje': 'La historia de usuario especificada no existe o no pertenece al proyecto'}), 404
 
+        # Eliminar todas las tareas asociadas a la historia de usuario
+        cursor.execute("DELETE FROM tareas_ WHERE historias_de_usuario = %s", (historia_id,))
+        
+        # Luego, eliminar la historia de usuario
         cursor.execute("DELETE FROM historias_de_usuario WHERE id = %s", (historia_id,))
         conexion.connection.commit()
         cursor.close()
