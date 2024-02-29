@@ -44,7 +44,7 @@ def listar_usuarios():
         datos = cursor.fetchall()
         usuarios = []
         for fila in datos:
-            usuario = {'id': fila[0], 'usuario': fila[1], 'email': fila[2], 'contraseña': fila[3], 'rol': fila[4]} 
+            usuario = {'id': fila[0], 'usuario': fila[1], 'email': fila[2], 'contraseña': fila[3], 'rol': fila[4], 'nombre': fila[5]} 
             usuarios.append(usuario)
         return jsonify({'usuarios': usuarios, 'mensaje': "Listado:"})
     except Exception as ex:
@@ -58,7 +58,7 @@ def leer_usuario(id):
         cursor.execute(sql)
         datos = cursor.fetchone()
         if datos != None:
-            usuario = {'id': datos[0], 'usuario': datos[1], 'email': datos[2], 'contraseña': datos[3], 'rol': datos[4]} 
+            usuario = {'id': datos[0], 'usuario': datos[1], 'email': datos[2], 'contraseña': datos[3], 'rol': datos[4], 'nombre': datos[5]} 
             return jsonify({'usuario': usuario, 'mensaje': "Usuario encontrado"})
         else:
             return jsonify({'mensaje': "Usuario NO encontrado"})
@@ -215,41 +215,32 @@ def actualizar_proyecto(id_proyecto, id_usuario):
 @app.route('/asignar_usuario/<codigo1>/<codigo2>', methods=['POST'])
 def asignar_usuario(codigo1, codigo2):
     try:
-        # Verifica si el usuario con codigo1 tiene rol 1
         cursor = conexion.connection.cursor()
         cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (codigo1,))
         rol_usuario = cursor.fetchone()
 
         if rol_usuario and rol_usuario[0] == 1:
-            # El usuario tiene el rol 1 (gerente), puede asignar usuarios al proyecto
 
-            # Verifica si el proyecto con codigo2 existe
             cursor.execute("SELECT id FROM proyectos WHERE id = %s", (codigo2,))
             proyecto_existente = cursor.fetchone()
 
             if proyecto_existente:
-                # El proyecto existe, se puede asignar un usuario
                 usuario_id = request.json.get('usuario_id')
 
-                # Verifica si el usuario_id corresponde a un usuario con rol 2
                 cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (usuario_id,))
                 rol_usuario_asignado = cursor.fetchone()
 
                 if rol_usuario_asignado and rol_usuario_asignado[0] == 2:
-                    # El usuario a asignar tiene el rol 2 (desarrollador), se puede agregar al proyecto
 
-                    # Verifica si el usuario ya está asignado al proyecto
                     cursor.execute("SELECT 1 FROM usuarios_proyectos WHERE usuario = %s AND proyecto = %s", (usuario_id, codigo2))
                     asignacion_existente = cursor.fetchone()
 
                     if asignacion_existente:
                         return jsonify({'mensaje': 'El usuario ya está asignado a este proyecto'}), 400
                     else:
-                        # Inserta el registro en la tabla usuarios_proyectos
                         cursor.execute("INSERT INTO usuarios_proyectos (usuario, proyecto) VALUES (%s, %s)", (usuario_id, codigo2))
                         conexion.connection.commit()
 
-                        # Recupera el nombre del usuario asignado
                         cursor.execute("SELECT usuario FROM usuarios WHERE id = %s", (usuario_id,))
                         nombre_usuario = cursor.fetchone()
 
@@ -268,7 +259,6 @@ def eliminar_usuario_proyecto(usuario_id, proyecto_id):
     try:
         cursor = conexion.connection.cursor()
 
-        # Verificar el rol del usuario
         cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (usuario_id,))
         usuario = cursor.fetchone()
 
@@ -277,22 +267,18 @@ def eliminar_usuario_proyecto(usuario_id, proyecto_id):
         elif usuario[0] != 1:
             return jsonify({'mensaje': 'El usuario no tiene permisos para realizar esta acción'}), 403
 
-        # Verificar si el ID del usuario a eliminar está presente en el cuerpo de la solicitud
         if 'usuario' not in request.json:
             return jsonify({'mensaje': 'El cuerpo de la solicitud debe contener el ID del usuario'}), 400
 
         usuario_proyecto_id = request.json['usuario']
 
-        # Verificar si el usuario está asignado a este proyecto
         cursor.execute("SELECT 1 FROM usuarios_proyectos WHERE usuario = %s AND proyecto = %s", (usuario_proyecto_id, proyecto_id))
         if cursor.fetchone() is None:
             return jsonify({'mensaje': 'El usuario no está asignado a este proyecto'}), 400
         
-        # Eliminar al usuario del proyecto
         cursor.execute("DELETE FROM usuarios_proyectos WHERE usuario = %s AND proyecto = %s", (usuario_proyecto_id, proyecto_id))
         conexion.connection.commit()
         
-        # Cerrar el cursor
         cursor.close()
 
         return jsonify({'mensaje': 'Usuario eliminado del proyecto correctamente'})
@@ -302,21 +288,17 @@ def eliminar_usuario_proyecto(usuario_id, proyecto_id):
 @app.route('/proyectos_usuario/<usuario_id>', methods=['GET'])
 def proyectos_usuario(usuario_id):
     try:
-        # Crear el cursor dentro de la función
         cursor = conexion.connection.cursor()
 
-        # Verificar el rol del usuario
         cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (usuario_id,))
         usuario = cursor.fetchone()
         if usuario is None:
             return jsonify({'mensaje': 'Usuario no encontrado'}), 404
 
         if usuario[0] == 1:
-            # Si es rol 1, obtener todos los proyectos donde el gerente sea el usuario
             cursor.execute("SELECT id, nombre, descripcion, fecha_inicio FROM proyectos WHERE gerente = %s", (usuario_id,))
             proyectos = cursor.fetchall()
         else:
-            # Si es rol 2, obtener todos los proyectos donde el usuario esté asignado
             cursor.execute("SELECT proyecto FROM usuarios_proyectos WHERE usuario = %s", (usuario_id,))
             proyectos_asignados = cursor.fetchall()
 
@@ -327,7 +309,6 @@ def proyectos_usuario(usuario_id):
                 if proyecto:
                     proyectos.append(proyecto)
 
-        # Cerrar el cursor
         cursor.close()
 
         return jsonify({'proyectos': proyectos}), 200
