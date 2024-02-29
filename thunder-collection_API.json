@@ -1,0 +1,441 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "API",
+    "dateExported": "2024-02-29T23:25:24.804Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "97c261a5-fe49-48a3-8fc5-ea1d08c12981",
+            "name": "Proyecto",
+            "containerId": "",
+            "created": "2024-02-26T18:05:12.022Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "6ab8d0a3-7d5c-483e-82e3-800f8e63428d",
+            "name": "Usuario",
+            "containerId": "",
+            "created": "2024-02-26T18:05:26.139Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "fe6dfbad-673c-460b-b559-a2e56a4d0c5b",
+            "name": "Usuario_Proyecto",
+            "containerId": "",
+            "created": "2024-02-26T18:05:57.605Z",
+            "sortNum": 25000
+        },
+        {
+            "_id": "d249b523-cc17-4aa7-a8bd-0d1cdf7d19bd",
+            "name": "Historias_de_usuario",
+            "containerId": "",
+            "created": "2024-02-26T18:05:38.355Z",
+            "sortNum": 30000
+        },
+        {
+            "_id": "8fce7188-744a-4ae0-8dce-c940bcb353c5",
+            "name": "Tareas",
+            "containerId": "",
+            "created": "2024-02-26T18:05:48.146Z",
+            "sortNum": 40000
+        },
+        {
+            "_id": "cb584c4b-bb14-4eaa-8714-d017eb33a4a7",
+            "name": "Actualizacion_historias_de_usuario",
+            "containerId": "",
+            "created": "2024-02-29T18:26:52.040Z",
+            "sortNum": 60000
+        },
+        {
+            "_id": "a57f341b-fc1f-433f-98f7-bf9d3483df49",
+            "name": "Actualizacion_tareas",
+            "containerId": "",
+            "created": "2024-02-29T18:27:03.108Z",
+            "sortNum": 70000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "dda5dad6-f0dd-42d3-b362-3df8866b06a3",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "6ab8d0a3-7d5c-483e-82e3-800f8e63428d",
+            "name": "get_leer_usuario",
+            "url": "http://127.0.0.1:5000/usuarios/2",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2024-02-24T17:25:08.843Z",
+            "modified": "2024-02-29T20:01:34.874Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "e22d3c38-9f02-4a22-82fb-9b8d75954c0a",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "8fce7188-744a-4ae0-8dce-c940bcb353c5",
+            "name": "delete_eliminar_tarea",
+            "url": "http://127.0.0.1:5000/eliminar_tarea/2",
+            "method": "DELETE",
+            "sortNum": 10000,
+            "created": "2024-02-27T17:47:15.200Z",
+            "modified": "2024-02-29T18:41:44.353Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"usuario\": 3\n}\n",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "b1ef5782-4590-470d-bc9d-f2baaed493cf",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "97c261a5-fe49-48a3-8fc5-ea1d08c12981",
+            "name": "get_listar_proyecto",
+            "url": "http://127.0.0.1:5000/proyectos",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2024-02-26T17:41:23.356Z",
+            "modified": "2024-02-26T17:41:31.577Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "20fbe3eb-1392-42ca-ac94-def16fcb69f7",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "8fce7188-744a-4ae0-8dce-c940bcb353c5",
+            "name": "get_crear_tarea",
+            "url": "http://127.0.0.1:5000/crear_tarea",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-02-27T17:27:53.560Z",
+            "modified": "2024-02-29T20:59:00.266Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"descripcion\": \"try\",\n  \"estado\": 2,\n  \"historia\": 3,\n  \"usuario\": 3\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "bb150a96-eb9d-438d-b5a3-c85e2344ac03",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "97c261a5-fe49-48a3-8fc5-ea1d08c12981",
+            "name": "get_leer_proyecto",
+            "url": "http://127.0.0.1:5000/proyectos/1",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2024-02-26T17:46:53.311Z",
+            "modified": "2024-02-26T22:29:48.052Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "38c2d1b6-3008-4b40-8905-01f78c874b35",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "fe6dfbad-673c-460b-b559-a2e56a4d0c5b",
+            "name": "post_asignar_usuario_a_proyecto",
+            "url": "http://127.0.0.1:5000/asignar_usuario/2/3",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-02-27T14:56:29.740Z",
+            "modified": "2024-02-29T20:30:51.627Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "\n{\n  \"comentario\": \"Aqui se pone el id del usuario al que se le va a agregar a un proyecto.\",\n  \"usuario_id\": 3\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "16d30814-bebb-4a1f-8b56-d175d2d65b69",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "8fce7188-744a-4ae0-8dce-c940bcb353c5",
+            "name": "leer_tareas_de_historia_de_usuario",
+            "url": "http://127.0.0.1:5000/tareas_por_historia/3",
+            "method": "GET",
+            "sortNum": 30000,
+            "created": "2024-02-28T17:01:56.255Z",
+            "modified": "2024-02-29T21:00:27.323Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "eae966c2-dbe8-41c4-b5e9-edf62253397e",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "97c261a5-fe49-48a3-8fc5-ea1d08c12981",
+            "name": "post_registrar_proyecto",
+            "url": "http://127.0.0.1:5000/proyectos/2",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2024-02-26T17:23:16.859Z",
+            "modified": "2024-02-29T20:38:56.328Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "\n    {\n    \"nombre\": \"x\",\n    \"descripcion\": \"Busca de intervalos apra meyor creciomiento empresarial\",\n    \"fecha_inicio\": \"2024-02-26\"\n    }\n  ",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "be285618-286a-4a80-bc92-aa784f3ddc86",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "d249b523-cc17-4aa7-a8bd-0d1cdf7d19bd",
+            "name": "delete_eliminar_historia_de_usuario",
+            "url": "http://127.0.0.1:5000/eliminar_historia_de_usuario/3",
+            "method": "DELETE",
+            "sortNum": 40000,
+            "created": "2024-02-27T16:26:42.396Z",
+            "modified": "2024-02-29T20:54:57.931Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "\n  {\n  \"usuario\": 3,\n  \"proyecto\": 2\n}\n\n",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "58978b36-cc6a-4728-b1d4-3000b1e954d1",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "97c261a5-fe49-48a3-8fc5-ea1d08c12981",
+            "name": "delete_eliminar_proyecto",
+            "url": "http://127.0.0.1:5000/proyectos/4/2",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2024-02-26T17:33:13.882Z",
+            "modified": "2024-02-29T20:40:33.208Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "4266209b-4ad5-4bc8-b060-603979575223",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "6ab8d0a3-7d5c-483e-82e3-800f8e63428d",
+            "name": "post_registrar_usuario",
+            "url": "http://127.0.0.1:5000/usuarios",
+            "method": "POST",
+            "sortNum": 60000,
+            "created": "2024-02-24T17:25:07.464Z",
+            "modified": "2024-02-29T23:00:40.628Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "\n    {\n    \"usuario\": \"Z\",\n    \"email\": \"Z@gmail.com\",\n    \"contrasena\": \"try123\",\n    \"rol\": 2,\n    \"nombre\": \"Z\"\n    }\n  ",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "da00c140-ef1e-423a-81e6-e86112f1d3e9",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "97c261a5-fe49-48a3-8fc5-ea1d08c12981",
+            "name": "put_actualizar_proyecto",
+            "url": "http://127.0.0.1:5000/proyectos/2/2",
+            "method": "PUT",
+            "sortNum": 60000,
+            "created": "2024-02-26T17:28:58.403Z",
+            "modified": "2024-02-29T17:15:54.827Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"nombre\": \"prueba.\",\n  \"descripcion\": \"Prueba\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "4ab10e04-9f51-4125-853a-e3ba83269074",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "fe6dfbad-673c-460b-b559-a2e56a4d0c5b",
+            "name": "delete_usuario_de_proyecto",
+            "url": "http://127.0.0.1:5000/eliminar_usuario_proyecto/2/2",
+            "method": "DELETE",
+            "sortNum": 60000,
+            "created": "2024-02-27T15:09:24.083Z",
+            "modified": "2024-02-29T17:23:11.661Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"usuario\": 3\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "dd807ad4-0bd9-490e-8364-ffbf69e037de",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "d249b523-cc17-4aa7-a8bd-0d1cdf7d19bd",
+            "name": "post_crear_historia_de_usuario",
+            "url": "http://127.0.0.1:5000/crear_historia_de_usuario",
+            "method": "POST",
+            "sortNum": 60000,
+            "created": "2024-02-27T16:08:44.125Z",
+            "modified": "2024-02-29T20:49:59.070Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"detalles\": \"x\",\n  \"criterios\": \"x\",\n  \"proyecto\": 3,\n  \"estado\": 1,\n  \"usuario\": 2\n}\n",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "1ed599e3-f8a1-4a07-b389-eb9664839681",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "6ab8d0a3-7d5c-483e-82e3-800f8e63428d",
+            "name": "get_listar_usuarios",
+            "url": "http://127.0.0.1:5000/usuarios",
+            "method": "GET",
+            "sortNum": 70000,
+            "created": "2024-02-24T17:25:05.908Z",
+            "modified": "2024-02-24T17:25:05.908Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "48df06fa-5fd0-4c20-a926-2472bac7be41",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "fe6dfbad-673c-460b-b559-a2e56a4d0c5b",
+            "name": "get_proyectos_usuarios",
+            "url": "http://127.0.0.1:5000/proyectos_usuario/2",
+            "method": "GET",
+            "sortNum": 70000,
+            "created": "2024-02-27T15:44:14.054Z",
+            "modified": "2024-02-29T20:44:07.829Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "2af6e657-2994-4e82-9282-b554ef171bdb",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "d249b523-cc17-4aa7-a8bd-0d1cdf7d19bd",
+            "name": "leer_historias_de_usuario",
+            "url": "http://127.0.0.1:5000/historias_de_usuario/3",
+            "method": "GET",
+            "sortNum": 70000,
+            "created": "2024-02-27T16:37:12.758Z",
+            "modified": "2024-02-29T20:50:02.668Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "2b2cf29a-5d31-4f4e-9b00-91218a78ee74",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "6ab8d0a3-7d5c-483e-82e3-800f8e63428d",
+            "name": "delete_eliminar_usuario",
+            "url": "http://127.0.0.1:5000/usuarios/5",
+            "method": "DELETE",
+            "sortNum": 80000,
+            "created": "2024-02-24T17:25:11.594Z",
+            "modified": "2024-02-29T20:13:35.378Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "05559561-c4ae-470e-9f27-ccdeeb554b13",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "6ab8d0a3-7d5c-483e-82e3-800f8e63428d",
+            "name": "put_actualizar_usuario",
+            "url": "http://127.0.0.1:5000/usuarios/3",
+            "method": "PUT",
+            "sortNum": 90000,
+            "created": "2024-02-24T17:25:13.165Z",
+            "modified": "2024-02-29T20:07:09.967Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"usuario\": \"z\",\n  \"email\": \"z@utadeo.edu.co\",\n  \"nombre\": \"Andres Betancourt\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "b43d6bb2-8fb7-499e-ac1b-d59a4c2ff2e1",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "",
+            "name": "login",
+            "url": "http://127.0.0.1:5000/login",
+            "method": "POST",
+            "sortNum": 140000,
+            "created": "2024-02-27T00:24:52.723Z",
+            "modified": "2024-02-29T23:00:47.853Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\": \"Z\",\n  \"password\": \"Z\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "b1b8bc55-3bf5-4e0b-923a-6f6e13be3baf",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "a57f341b-fc1f-433f-98f7-bf9d3483df49",
+            "name": "put_actualizar_estado_tarea",
+            "url": "http://127.0.0.1:5000/actualizar_estado_tarea/5",
+            "method": "POST",
+            "sortNum": 150000,
+            "created": "2024-02-29T18:30:52.692Z",
+            "modified": "2024-02-29T23:23:12.533Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "1a5c693e-a97d-4820-a3af-1d0f7584d349",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "8fce7188-744a-4ae0-8dce-c940bcb353c5",
+            "name": "editar_tareas",
+            "url": "http://127.0.0.1:5000/editar_tarea/3",
+            "method": "PUT",
+            "sortNum": 160000,
+            "created": "2024-02-29T18:44:22.767Z",
+            "modified": "2024-02-29T18:45:59.059Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\r\n  \"descripcion\": \"Nueva descripción de la tarea\"\r\n}\r\n",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "5a4d7f77-06ce-46d2-9c35-224ede664e08",
+            "colId": "b1c6422e-d646-4bb9-8446-49ab6614458f",
+            "containerId": "cb584c4b-bb14-4eaa-8714-d017eb33a4a7",
+            "name": "post_actualizar_estado_historia",
+            "url": "http://127.0.0.1:5000/actualizar_estado_historia/3/3",
+            "method": "POST",
+            "sortNum": 180000,
+            "created": "2024-02-29T23:07:47.964Z",
+            "modified": "2024-02-29T23:20:24.124Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        }
+    ]
+}
