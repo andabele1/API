@@ -91,7 +91,7 @@ Se muestran todos los proyectos que esten en la base de datos.
 
 ### put_actualizar_proyectos
 
-URL: http://127.0.0.1:5000/proyectos/<id del proyecto que se quiere actualizar>/<id del usuario que va a actualizar el proyecto (solo los gerentes rol = 1, pueden actualizar un proyecto)>
+URL: http://127.0.0.1:5000/proyectos<id del proyecto que se quiere actualizar><id del usuario que va a actualizar el proyecto (solo los gerentes rol = 1, pueden actualizar un proyecto)>
 
 URL de ejemplo: http://127.0.0.1:5000/proyectos/2/2
 
@@ -207,7 +207,7 @@ JSON de ejemplo:
     "usuario": 3
     }
 
-En cada campo se añade la descripcion de la tarea, el estado, 1 = nueva, 2 = en proceso, 3 = finalizada; en la historia, la historia de usuario a la cual va a estara asociada la tarea y 
+En cada campo se añade la descripcion de la tarea, el estado, 1 = nueva, 2 = en proceso, 3 = finalizada; en la historia, la historia de usuario a la cual va a estar asociada la tarea y 
 en usuario, el usuario que va a crear la tarea, cualquier usuario puede crear una tarea. 
 
 ### leer_tareas_de_historia_de_usuario
@@ -216,7 +216,7 @@ URL: http://127.0.0.1:5000/tareas_por_historia/<id de la historia a la cual se l
 
 URL de ejemplo: http://127.0.0.1:5000/tareas_por_historia/2
 
-Se mostraran las tareas qeu esten asociadas a un historia de usuario especifica.
+Se mostraran las tareas que esten asociadas a un historia de usuario especifica.
 
 ### editar_tareas
 
