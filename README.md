@@ -21,7 +21,7 @@ no deben haber campos repetidos en el usuario o email, si se encuentra un usuari
 
 ### get_leer_usuarios
 
-URL: http://127.0.0.1:5000/usuarios/<id del usuario que se quiera leer>
+URL: http://127.0.0.1:5000/usuarios/{id del usuario que se quiera leer}
 
 URL de ejemplo: http://127.0.0.1:5000/usuarios/1
 
@@ -35,7 +35,7 @@ Se muestran todos los usuarios que esten en la base de datos.
 
 ### put actualizar_usuarios
 
-URL: http://127.0.0.1:5000/usuarios/<id del usuario a actualizar>
+URL: http://127.0.0.1:5000/usuarios/{id del usuario a actualizar}
 
 URL de ejemplo: http://127.0.0.1:5000/usuarios/3
 
@@ -51,7 +51,7 @@ Se actualizaran los campos usuario, email, nombre; estos no pueden se repetidos 
 
 ### delete_eliminar_usuarios
 
-URL: http://127.0.0.1:5000/usuarios/<id del usuario que se quiera eliminar>
+URL: http://127.0.0.1:5000/usuarios/{id del usuario que se quiera eliminar}
 
 URL de ejemplo: http://127.0.0.1:5000/usuarios/1
 
@@ -61,7 +61,7 @@ Se eliminara el usuario el cual se indique, pero no se podran eliminar usuarios 
 
 ### get_registrar_proyectos
 
-URL: http://127.0.0.1:5000/proyectos/<id del usuario que va a crear el proyecto (solo los gerentes rol = 1, pueden crear proyectos)>
+URL: http://127.0.0.1:5000/proyectos/{id del usuario que va a crear el proyecto (solo los gerentes rol = 1, pueden crear proyectos)}
 
 URL de ejemplo: http://127.0.0.1:5000/proyectos/2
 
@@ -77,7 +77,7 @@ En cada campo se añade el nombre, descripcion y la fecha de inicio del proyecto
 
 ### get_leer_proyectos
 
-URL: http://127.0.0.1:5000/proyectos/<id del proyecto que se quiere visualizar>
+URL: http://127.0.0.1:5000/proyectos/{id del proyecto que se quiere visualizar}
 
 URL de ejemplo: http://127.0.0.1:5000/proyectos/1
 
@@ -91,7 +91,7 @@ Se muestran todos los proyectos que esten en la base de datos.
 
 ### put_actualizar_proyectos
 
-URL: http://127.0.0.1:5000/proyectos/<id del proyecto que se quiere actualizar><id del usuario que va a actualizar el proyecto (solo los gerentes rol = 1, pueden actualizar un proyecto)>
+URL: http://127.0.0.1:5000/proyectos/{id del proyecto que se quiere actualizar}/{id del usuario que va a actualizar el proyecto (solo los gerentes rol = 1, pueden actualizar un proyecto)}
 
 URL de ejemplo: http://127.0.0.1:5000/proyectos/2/2
 
@@ -106,7 +106,7 @@ Se actualizaran los campos nombre y descripcion, el nombre no puede ser igual al
 
 ### delete_eliminar_proyectos
 
-URL: http://127.0.0.1:5000/proyectos/<id del proyecto que se quiere elimniar>/<id del usuario que va a eliminar el proyecto (solo los gerentes rol = 1, pueden eliminar un proyecto)>
+URL: http://127.0.0.1:5000/proyectos/{id del proyecto que se quiere eliminar}/{id del usuario que va a eliminar el proyecto (solo los gerentes rol = 1, pueden eliminar un proyecto)}
 
 URL de ejemplo: http://127.0.0.1:5000/proyectos/1/2
 
@@ -116,7 +116,7 @@ Se eliminara el proyectos con el id encontrado, pero no puede haber ningun usuar
 
 ### post_asignar_usuario
 
-URL: http://127.0.0.1:5000/asignar_usuario/<id del gerente que va a asignar un usuario a un proyecto>/<id del proyecto al que se le va a asignar al usuario>
+URL: http://127.0.0.1:5000/asignar_usuario/{id del gerente que va a asignar un usuario a un proyecto}/{id del proyecto al que se le va a asignar al usuario}
 
 URL de ejemplo: http://127.0.0.1:5000/asignar_usuario/2/3
 
@@ -130,7 +130,7 @@ En el campo "usuario_id" se debe poner el id del usuario al que le van a asignar
 
 ### get_proyectos_usuario
 
-URL: http://127.0.0.1:5000/proyectos_usuario/<id del usuario al cual se le quieren visualizar sus proyectos>
+URL: http://127.0.0.1:5000/proyectos_usuario/{id del usuario al cual se le quieren visualizar sus proyectos}
 
 URL de ejemplo: http://127.0.0.1:5000/proyectos_usuario/4
 
@@ -138,7 +138,7 @@ Muestra los proyectos los cuales estan asociados a los usuarios
 
 ### delete_usuario_proyecto
 
-URL: http://127.0.0.1:5000/eliminar_usuario_proyecto/<id del gerente que va a eliminar un usuario de un proyecto>/<id del proyecto en el que se va eliminar al usuario>
+URL: http://127.0.0.1:5000/eliminar_usuario_proyecto/{id del gerente que va a eliminar un usuario de un proyecto}/{id del proyecto en el que se va eliminar al usuario}
 
 URL de ejemplo: http://127.0.0.1:5000/eliminar_usuario_proyecto/2/2
 
@@ -171,7 +171,7 @@ y el gerente (rol = 1) encargado de la historia de usuario.
 
 ### leer_historias de usuario
 
-URL: http://127.0.0.1:5000/historias_de_usuario/<id del proyecto al cual se le quieren visualizar sus historias de usuario>
+URL: http://127.0.0.1:5000/historias_de_usuario/{id del proyecto al cual se le quieren visualizar sus historias de usuario}
 
 URL de ejemplo: http://127.0.0.1:5000/historias_de_usuario/3
 
@@ -179,7 +179,7 @@ Se mostraran las historias de usuario las cuales estna asociadas au proyecto en 
 
 ### delete_eliminar_historias_de_usuario
 
-URL: http://127.0.0.1:5000/eliminar_historia_de_usuario/<id de la historia de usuario que se quiera eliminar>
+URL: http://127.0.0.1:5000/eliminar_historia_de_usuario/{id de la historia de usuario que se quiera eliminar}
 
 URL de ejemplo: http://127.0.0.1:5000/eliminar_historia_de_usuario/2
 
@@ -212,7 +212,7 @@ en usuario, el usuario que va a crear la tarea, cualquier usuario puede crear un
 
 ### leer_tareas_de_historia_de_usuario
 
-URL: http://127.0.0.1:5000/tareas_por_historia/<id de la historia a la cual se le quieren visualizar las tareas>
+URL: http://127.0.0.1:5000/tareas_por_historia/{id de la historia a la cual se le quieren visualizar las tareas}
 
 URL de ejemplo: http://127.0.0.1:5000/tareas_por_historia/2
 
@@ -220,7 +220,7 @@ Se mostraran las tareas que esten asociadas a un historia de usuario especifica.
 
 ### editar_tareas
 
-URL: http://127.0.0.1:5000/editar_tarea/<id de la tarea que se quiere actualzar>
+URL: http://127.0.0.1:5000/editar_tarea/{id de la tarea que se quiere actualzar}
 
 URL de ejemplo: http://127.0.0.1:5000/editar_tarea/3
 
@@ -234,7 +234,7 @@ Se podra editar la descripcion de la tarea indicada.
 
 ### delete_eliminar_tareas
 
-URL: http://127.0.0.1:5000/eliminar_tarea/<id de la tarea que se quiera eliminar>
+URL: http://127.0.0.1:5000/eliminar_tarea/{id de la tarea que se quiera eliminar}
 
 URL de ejemplo: http://127.0.0.1:5000/eliminar_tarea/2
 
@@ -250,7 +250,7 @@ En el campo "usuario" se debera poner el id del usuario que va a eliminar la tar
 
 ### post_actualizar_estado_historia
 
-URL: http://127.0.0.1:5000/actualizar_estado_historia/<id del gerente (rol = 1 ) que va a actualizar la historia de usuario>/<id de la historia de usuario a actualizar>
+URL: http://127.0.0.1:5000/actualizar_estado_historia/{id del gerente (rol = 1 ) que va a actualizar la historia de usuario}/{id de la historia de usuario a actualizar}
 
 URL de ejemplo: http://127.0.0.1:5000/actualizar_estado_historia/2/3
  
@@ -261,7 +261,7 @@ Se actualizara el estado de las historias de usuario y quedaran almacenadas en u
 
 ### put_actualizar_estado_tareas
 
-URL: http://127.0.0.1:5000/actualizar_estado_tarea/<id de la tarea a actualizar>
+URL: http://127.0.0.1:5000/actualizar_estado_tarea/{id de la tarea a actualizar}
 
 URL de ejemplo: http://127.0.0.1:5000/actualizar_estado_tarea/5
 
