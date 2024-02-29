@@ -261,7 +261,7 @@ Se actualizara el estado de las historias de usuario y quedaran almacenadas en u
 
 ### put_actualizar_estado_tareas
 
-URL: http://127.0.0.1:5000/actualizar_estado_tarea/{id de la tarea a actualizar}
+URL: http://127.0.0.1:5000/actualizar_estado_tarea/ {id de la tarea a actualizar}
 
 URL de ejemplo: http://127.0.0.1:5000/actualizar_estado_tarea/5
 
