@@ -78,19 +78,20 @@ def registrar_usuario():
         
         return jsonify({'mensaje': "Usuario registrado exitosamente"})
     except Exception as ex:
-        return "Error"
-    
-@app.route('/usuarios/<id>', methods = ['DELETE'])
+        return jsonify({'mensaje': f'Error al registrar usuario: {str(ex)}'}), 500
+
+@app.route('/usuarios/<int:id>', methods=['DELETE'])
 def eliminar_usuario(id):
     try:
         cursor = conexion.connection.cursor()
-        sql = "DELETE FROM usuarios WHERE id = '{0}'".format(id)
-        cursor.execute(sql)
+        sql = "DELETE FROM usuarios WHERE id = %s"
+        cursor.execute(sql, (id,))
         conexion.connection.commit()
         return jsonify({'mensaje': "Usuario eliminado"})
     except Exception as ex:
-        return jsonify({'mensaje': "Error"})
-    
+        print("Error:", ex)
+    return jsonify({'mensaje': "Error al eliminar usuario"})
+
 @app.route('/usuarios/<id>', methods=['PUT'])
 def actualizar_usuario(id):
     try:
@@ -368,24 +369,20 @@ def eliminar_historia_de_usuario(historia_id):
 
         cursor = conexion.connection.cursor()
 
-        # Verificar si el usuario existe y tiene el rol de gerente
         cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (usuario_id,))
         usuario = cursor.fetchone()
         if usuario is None or usuario[0] != 1:
             return jsonify({'mensaje': 'Solo los gerentes pueden eliminar historias de usuario'}), 403
 
-        # Verificar si el proyecto existe
         cursor.execute("SELECT 1 FROM proyectos WHERE id = %s", (proyecto_id,))
         if cursor.fetchone() is None:
             return jsonify({'mensaje': 'El proyecto especificado no existe'}), 404
 
-        # Verificar si la historia de usuario existe y pertenece al proyecto
         cursor.execute("SELECT 1 FROM historias_de_usuario WHERE id = %s AND proyecto = %s", (historia_id, proyecto_id))
         historia_existente = cursor.fetchone()
         if historia_existente is None:
             return jsonify({'mensaje': 'La historia de usuario especificada no existe o no pertenece al proyecto'}), 404
 
-        # Eliminar la historia de usuario
         cursor.execute("DELETE FROM historias_de_usuario WHERE id = %s", (historia_id,))
         conexion.connection.commit()
         cursor.close()
@@ -430,30 +427,21 @@ def crear_tarea():
 
         cursor = conexion.connection.cursor()
 
-        # Verificar si la historia de usuario existe
         cursor.execute("SELECT proyecto FROM historias_de_usuario WHERE id = %s", (historia_id,))
         proyecto_id = cursor.fetchone()
         if proyecto_id is None:
             return jsonify({'mensaje': 'La historia de usuario especificada no existe'}), 404
 
-        # Verificar si el usuario tiene el rol de gerente en la tabla de usuarios
-        cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (usuario_id,))
-        rol_usuario = cursor.fetchone()
-        if rol_usuario is None or rol_usuario[0] != 1:
-            return jsonify({'mensaje': 'Solo el gerente puede crear tareas para esta historia de usuario'}), 403
-
-        # Verificar si el estado existe
         cursor.execute("SELECT 1 FROM estados WHERE id = %s", (estado_id,))
         if cursor.fetchone() is None:
             return jsonify({'mensaje': 'El estado especificado no existe'}), 404
 
-        # Verificar si ya existe una tarea con la misma descripción en la misma historia de usuario
-        cursor.execute("SELECT 1 FROM tareas_ WHERE descripcion = %s AND historia_de_usuario = %s", (descripcion, historia_id))
+        cursor.execute("SELECT 1 FROM tareas_ WHERE descripcion = %s AND historias_de_usuario = %s", (descripcion, historia_id))
         if cursor.fetchone() is not None:
             return jsonify({'mensaje': 'Ya existe una tarea con la misma descripción en esta historia de usuario'}), 409
 
         # Insertar la nueva tarea en la base de datos
-        cursor.execute("INSERT INTO tareas_ (descripcion, estado, historia_de_usuario, usuario) VALUES (%s, %s, %s, %s)", (descripcion, estado_id, historia_id, usuario_id))
+        cursor.execute("INSERT INTO tareas_ (descripcion, estado, historias_de_usuario, usuario) VALUES (%s, %s, %s, %s)", (descripcion, estado_id, historia_id, usuario_id))
         conexion.connection.commit()
         cursor.close()
 
@@ -465,21 +453,16 @@ def crear_tarea():
 @app.route('/eliminar_tarea/<int:tarea_id>', methods=['DELETE'])
 def eliminar_tarea(tarea_id):
     try:
-        # Verificar si el usuario que realiza la solicitud es un gerente
         usuario_id = request.json.get('usuario')
         cursor = conexion.connection.cursor()
         cursor.execute("SELECT rol FROM usuarios WHERE id = %s", (usuario_id,))
         rol_usuario = cursor.fetchone()
-        if rol_usuario is None or rol_usuario[0] != 1:
-            return jsonify({'mensaje': 'Solo el gerente puede eliminar tareas'}), 403
 
-        # Verificar si la tarea existe
         cursor.execute("SELECT 1 FROM tareas_ WHERE id = %s", (tarea_id,))
         tarea_existente = cursor.fetchone()
         if tarea_existente is None:
             return jsonify({'mensaje': 'La tarea especificada no existe'}), 404
 
-        # Eliminar la tarea de la base de datos
         cursor.execute("DELETE FROM tareas_ WHERE id = %s", (tarea_id,))
         conexion.connection.commit()
         cursor.close()
@@ -494,18 +477,15 @@ def tareas_por_historia(historia_id):
     try:
         cursor = conexion.connection.cursor()
 
-        # Verificar si la historia de usuario existe
         cursor.execute("SELECT 1 FROM historias_de_usuario WHERE id = %s", (historia_id,))
         historia_existente = cursor.fetchone()
         if historia_existente is None:
             return jsonify({'mensaje': 'La historia de usuario especificada no existe'}), 404
 
-        # Obtener las tareas asociadas a la historia de usuario
-        cursor.execute("SELECT id, descripcion, estado, usuario FROM tareas_ WHERE historia_de_usuario = %s", (historia_id,))
+        cursor.execute("SELECT id, descripcion, estado, usuario FROM tareas_ WHERE historias_de_usuario = %s", (historia_id,))
         tareas = cursor.fetchall()
         cursor.close()
 
-        # Formatear los resultados en JSON
         tareas_json = []
         for tarea in tareas:
             tarea_json = {
@@ -521,9 +501,61 @@ def tareas_por_historia(historia_id):
     except Exception as e:
         return jsonify({'mensaje': 'Error en el servidor: ' + str(e)}), 500
 
+@app.route('/editar_tarea/<int:tarea_id>', methods=['PUT'])
+def editar_tarea(tarea_id):
+    try:
+        # Obtener los datos de la tarea del cuerpo de la solicitud
+        datos_tarea = request.json
+        cursor = conexion.connection.cursor()
+        # Verificar si la tarea existe
+        cursor.execute("SELECT * FROM tareas_ WHERE id = %s", (tarea_id,))
+        tarea_existente = cursor.fetchone()
+        if tarea_existente is None:
+            return jsonify({'mensaje': 'La tarea no existe'}), 404
+        
+        # Actualizar los detalles de la tarea en la base de datos
+        cursor.execute("UPDATE tareas_ SET descripcion = %s WHERE id = %s", (datos_tarea['descripcion'], tarea_id))
+        conexion.connection.commit()
+        
+        return jsonify({'mensaje': 'Tarea actualizada correctamente'}), 200
+    
+    except Exception as e:
+        return jsonify({'mensaje': str(e)}), 500
+    
 # ACTUALIZACIONES_TAREAS
     
+@app.route('/actualizar_estado_tarea/<int:tarea_id>', methods=['PUT'])
+def actualizar_estado_tarea(tarea_id):
+    try:
+        cursor = conexion.connection.cursor()
+        cursor.execute("SELECT * FROM tareas_ WHERE id = %s", (tarea_id,))
+        tarea_existente = cursor.fetchone()
 
+        if tarea_existente:
+            cursor.execute("SELECT estado FROM actualizacion_estado_tareas WHERE tarea = %s ORDER BY hora_actualizacion DESC LIMIT 1", (tarea_id,))
+            ultimo_estado = cursor.fetchone()
+
+            if ultimo_estado:
+                nuevo_estado = ultimo_estado[0] + 1 if ultimo_estado[0] < 3 else ultimo_estado[0]
+
+                cursor.execute("UPDATE tareas_ SET estado = %s WHERE id = %s", (nuevo_estado, tarea_id))
+                conexion.connection.commit()
+
+                hora_actualizacion = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                cursor.execute("INSERT INTO actualizacion_estado_tareas (tarea, estado, usuario, hora_actualizacion) VALUES (%s, %s, %s, %s)",
+                               (tarea_id, nuevo_estado, tarea_existente[4], hora_actualizacion))
+                conexion.connection.commit()
+
+                cursor.close()
+
+                return jsonify({'mensaje': f'Estado de la tarea actualizado correctamente a {nuevo_estado}'}), 200
+            else:
+                return jsonify({'mensaje': 'No se encontraron estados para esta tarea'}), 404
+        else:
+            return jsonify({'mensaje': 'La tarea no existe'}), 404
+
+    except Exception as e:
+        return jsonify({'mensaje': str(e)}), 500
 
 # ACTUALIZACIONES_HISTORIAS_DE_USUARIO
     
