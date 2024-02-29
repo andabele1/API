@@ -62,7 +62,8 @@ CREATE TABLE usuarios (
     usuario    TEXT NOT NULL,
     email      TEXT NOT NULL,
     contrasena TEXT NOT NULL,
-    rol        INTEGER
+    rol        INTEGER,
+    nombre     TEXT NOT NULL
 );
 
 
