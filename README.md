@@ -91,7 +91,7 @@ Se muestran todos los proyectos que esten en la base de datos.
 
 ### put_actualizar_proyectos
 
-URL: http://127.0.0.1:5000/proyectos<id del proyecto que se quiere actualizar><id del usuario que va a actualizar el proyecto (solo los gerentes rol = 1, pueden actualizar un proyecto)>
+URL: http://127.0.0.1:5000/proyectos/<id del proyecto que se quiere actualizar><id del usuario que va a actualizar el proyecto (solo los gerentes rol = 1, pueden actualizar un proyecto)>
 
 URL de ejemplo: http://127.0.0.1:5000/proyectos/2/2
 
